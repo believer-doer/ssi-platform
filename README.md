@@ -292,8 +292,4 @@ Control Plane UI  (veridity-portal)
 | Platform capabilities | [`platform-capabilities.md`](./platform-capabilities.md) |
 | Wallet roadmap | [`ssi-wallet/ssi-wallet-roadmap.md`](./ssi-wallet/ssi-wallet-roadmap.md) |
 
----
 
-## License
-
-Private repository. All rights reserved.
