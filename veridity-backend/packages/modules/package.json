@@ -1,0 +1,12 @@
+{
+  "name": "@ssi/modules",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "@ssi/driver-internal": "workspace:*",
+    "@ssi/plugins": "workspace:*",
+    "@ssi/utils": "workspace:*"
+  }
+}

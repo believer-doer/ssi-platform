@@ -1,0 +1,13 @@
+{
+  "name": "@ssi/driver-internal",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "mongoose": "^9.3.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

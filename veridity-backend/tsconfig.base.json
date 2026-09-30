@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@ssi/api-server/*": ["apps/api-server/src/*"],
+      "@ssi/worker/*": ["apps/worker/src/*"],
+
+      "@ssi/core": ["packages/core/index.ts"],
+      "@ssi/core/*": ["packages/core/*"],
+
+      "@ssi/config": ["packages/config/index.ts"],
+      "@ssi/config/*": ["packages/config/*"],
+
+      "@ssi/utils": ["packages/utils/index.ts"],
+      "@ssi/utils/*": ["packages/utils/*"],
+
+      "@ssi/plugins": ["packages/plugins/index.ts"],
+      "@ssi/plugins/*": ["packages/plugins/*"],
+
+      "@ssi/modules": ["packages/modules/index.ts"],
+      "@ssi/modules/*": ["packages/modules/*"],
+
+      "@ssi/protocols": ["packages/protocols/index.ts"],
+      "@ssi/protocols/*": ["packages/protocols/*"],
+
+      "@ssi/driver-internal": ["packages/drivers/internal/src/index.ts"],
+      "@ssi/driver-internal/*": ["packages/drivers/internal/*"],
+
+      "@ssi/driver-ethereum": ["packages/drivers/ethereum/src/index.ts"],
+      "@ssi/driver-ethereum/*": ["packages/drivers/ethereum/*"],
+
+      "@ssi/driver-bitcoin": ["packages/drivers/bitcoin/src/index.ts"],
+      "@ssi/driver-bitcoin/*": ["packages/drivers/bitcoin/*"],
+
+      "@ssi/driver-resolver": ["packages/plugins/driver-resolver/resolver.ts"],
+      "@ssi/driver-resolver/*": ["packages/plugins/driver-resolver/*"]
+    },
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}

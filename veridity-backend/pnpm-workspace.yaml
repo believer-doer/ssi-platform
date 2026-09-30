@@ -1,0 +1,11 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "packages/*/*"
+allowBuilds:
+  '@2060.io/ffi-napi': true
+  '@2060.io/ref-napi': true
+  '@mattrglobal/node-bbs-signatures': false
+  es5-ext: true
+  keccak: false
+  unrs-resolver: false

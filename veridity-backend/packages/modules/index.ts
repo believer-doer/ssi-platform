@@ -1,0 +1,15 @@
+export { default as issuerModule } from "./issuer/index";
+export { default as schemaModule } from "./schema/index";
+export { default as credentialModule } from "./credential/index";
+export { default as presentationModule } from "./presentation/index";
+export { default as verifierModule } from "./verifier/index";
+export { default as walletModule } from "./wallet/index";
+export { default as verificationModule } from "./verification/index";
+export { default as templateModule } from "./template/index";
+export { default as revocationModule } from "./revocation/index";
+export { default as tenantModule } from "./tenant/index";
+export { default as trustModule } from "./trust/index";
+export { default as governanceModule } from "./governance/index";
+export { default as protocolModule } from "./protocol/index";
+export { default as auditModule } from "./audit/index";
+export { default as systemModule } from "./system/index";

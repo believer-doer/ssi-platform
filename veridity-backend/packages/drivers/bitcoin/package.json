@@ -1,0 +1,15 @@
+{
+  "name": "@ssi/driver-bitcoin",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@ssi/driver-internal": "workspace:*",
+    "bitcoinjs-lib": "^7.0.0",
+    "axios": "^1.6.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

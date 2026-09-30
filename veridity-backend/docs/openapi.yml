@@ -1,0 +1,3733 @@
+openapi: 3.1.0
+info:
+  title: SSI Platform API
+  version: 0.3.0
+  description: 'OpenAPI contract for the current SSI Platform backend. The API exposes onboarding, schema/template management,
+    credential issuance and verification, presentation flows, trust registry, governance, protocol sessions, audit retrieval,
+    and revocation list operations across multiple SSI drivers.
+
+    '
+servers:
+- url: http://localhost:4000/v1
+  description: Local API server
+tags:
+- name: Issuers
+- name: Verifiers
+- name: Wallets
+- name: Schemas
+- name: Templates
+- name: Credentials
+- name: Presentations
+- name: Verification
+- name: Tenants
+- name: Trust
+- name: Governance
+- name: Protocols
+- name: Audit
+- name: Revocation
+- name: System
+  description: Operational health, readiness, and session context endpoints.
+security:
+- BearerAuth: []
+paths:
+  /{driver}/issuers:
+    post:
+      tags:
+      - Issuers
+      summary: Create an issuer record in pending state
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssuerOnboardRequest'
+            examples:
+              internal-key-issuer:
+                $ref: '#/components/examples/internal-key-issuer-request'
+              ethereum-ethr-issuer:
+                $ref: '#/components/examples/ethereum-ethr-issuer-request'
+      responses:
+        '200':
+          description: Issuer onboarded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuerRecord'
+              examples:
+                internal-key-issuer:
+                  $ref: '#/components/examples/internal-key-issuer-response'
+                ethereum-ethr-issuer:
+                  $ref: '#/components/examples/ethereum-ethr-issuer-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Issuers
+      summary: List issuers
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantQuery'
+      responses:
+        '200':
+          description: Issuers returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssuerRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/issuers/{did}/activate:
+    post:
+      tags:
+      - Issuers
+      summary: Activate an issuer after governance approval
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Did'
+      responses:
+        '200':
+          description: Issuer activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuerRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/issuers/{did}:
+    get:
+      tags:
+      - Issuers
+      summary: Get issuer by DID
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Did'
+      responses:
+        '200':
+          description: Issuer returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuerRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/verifiers:
+    post:
+      tags:
+      - Verifiers
+      summary: Create a verifier record in pending state
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifierOnboardRequest'
+      responses:
+        '200':
+          description: Verifier onboarded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifierRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Verifiers
+      summary: List verifiers
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantQuery'
+      responses:
+        '200':
+          description: Verifiers returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VerifierRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/verifiers/{did}/activate:
+    post:
+      tags:
+      - Verifiers
+      summary: Activate a verifier after governance approval
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Did'
+      responses:
+        '200':
+          description: Verifier activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifierRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/verifiers/{did}:
+    get:
+      tags:
+      - Verifiers
+      summary: Get verifier by DID
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Did'
+      responses:
+        '200':
+          description: Verifier returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifierRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/wallets:
+    post:
+      tags:
+      - Wallets
+      summary: Onboard a wallet
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletOnboardRequest'
+            examples:
+              internal-wallet:
+                $ref: '#/components/examples/internal-wallet-request'
+              ethereum-wallet:
+                $ref: '#/components/examples/ethereum-wallet-request'
+              bitcoin-wallet:
+                $ref: '#/components/examples/bitcoin-wallet-request'
+      responses:
+        '200':
+          description: Wallet onboarded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletOnboardResponse'
+              examples:
+                internal-wallet:
+                  $ref: '#/components/examples/internal-wallet-response'
+                ethereum-wallet:
+                  $ref: '#/components/examples/ethereum-wallet-response'
+                bitcoin-wallet:
+                  $ref: '#/components/examples/bitcoin-wallet-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Wallets
+      summary: List wallets
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantQuery'
+      responses:
+        '200':
+          description: Wallets returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WalletRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/wallets/{did}:
+    get:
+      tags:
+      - Wallets
+      summary: Get wallet by DID
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Did'
+      responses:
+        '200':
+          description: Wallet returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/schemas:
+    post:
+      tags:
+      - Schemas
+      summary: Register a schema in inactive state
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaRegisterRequest'
+      responses:
+        '200':
+          description: Schema registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Schemas
+      summary: List schemas
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantQuery'
+      responses:
+        '200':
+          description: Schemas returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SchemaRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/schemas/{id}/activate:
+    post:
+      tags:
+      - Schemas
+      summary: Activate a schema after governance approval
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Schema activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/schemas/{id}:
+    get:
+      tags:
+      - Schemas
+      summary: Get schema by id
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Schema returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/templates:
+    post:
+      tags:
+      - Templates
+      summary: Register a credential template in disabled state
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRegisterRequest'
+      responses:
+        '200':
+          description: Template registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Templates
+      summary: List templates
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantQuery'
+      responses:
+        '200':
+          description: Templates returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TemplateRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/templates/{id}/activate:
+    post:
+      tags:
+      - Templates
+      summary: Activate a template after governance approval
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Template activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/templates/{id}:
+    get:
+      tags:
+      - Templates
+      summary: Get template by id
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Template returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/credentials:
+    post:
+      tags:
+      - Credentials
+      summary: Issue a verifiable credential
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialIssueRequest'
+            examples:
+              internal-vc-jwt:
+                $ref: '#/components/examples/internal-vc-jwt-request'
+              ethereum-vc-ldp:
+                $ref: '#/components/examples/ethereum-vc-ldp-request'
+      responses:
+        '200':
+          description: Credential issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialIssueResult'
+              examples:
+                internal-vc-jwt:
+                  $ref: '#/components/examples/internal-vc-jwt-response'
+                ethereum-vc-ldp:
+                  $ref: '#/components/examples/ethereum-vc-ldp-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Credentials
+      summary: List issued credentials for a tenant
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      responses:
+        '200':
+          description: Issued credentials returned
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/CredentialIssueResult'
+                - type: object
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/CredentialIssueResult'
+                    page:
+                      type: integer
+                    limit:
+                      type: integer
+                    total:
+                      type: integer
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/credentials/verify:
+    post:
+      tags:
+      - Credentials
+      summary: Verify a credential
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialVerifyRequest'
+      responses:
+        '200':
+          description: Credential verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialVerifyResult'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/verify-credential:
+    post:
+      tags:
+      - Verification
+      summary: Verify a credential via alias route
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialVerifyRequest'
+      responses:
+        '200':
+          description: Credential verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialVerifyResult'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/presentations:
+    post:
+      tags:
+      - Presentations
+      summary: Create a presentation
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresentationCreateRequest'
+      responses:
+        '200':
+          description: Presentation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/presentations/verify:
+    post:
+      tags:
+      - Presentations
+      summary: Verify a presentation
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresentationVerifyRequest'
+            examples:
+              internal-presentation-verify:
+                $ref: '#/components/examples/internal-presentation-verify-request'
+              ethereum-presentation-verify:
+                $ref: '#/components/examples/ethereum-presentation-verify-request'
+      responses:
+        '200':
+          description: Presentation verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationVerifyResult'
+              examples:
+                internal-presentation-verify:
+                  $ref: '#/components/examples/internal-presentation-verify-response'
+                ethereum-presentation-verify:
+                  $ref: '#/components/examples/ethereum-presentation-verify-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/verify-presentation:
+    post:
+      tags:
+      - Verification
+      summary: Verify a presentation via alias route
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresentationVerifyRequest'
+            examples:
+              internal-presentation-verify:
+                $ref: '#/components/examples/internal-presentation-verify-request'
+      responses:
+        '200':
+          description: Presentation verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationVerifyResult'
+              examples:
+                internal-presentation-verify:
+                  $ref: '#/components/examples/internal-presentation-verify-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/tenants:
+    post:
+      tags:
+      - Tenants
+      summary: Create a tenant
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantCreateRequest'
+      responses:
+        '200':
+          description: Tenant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Tenants
+      summary: List tenants
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      security: []
+      responses:
+        '200':
+          description: Tenants returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TenantRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/tenants/{id}:
+    get:
+      tags:
+      - Tenants
+      summary: Get tenant by id
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      security: []
+      responses:
+        '200':
+          description: Tenant returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/tenants/{id}/policies:
+    post:
+      tags:
+      - Tenants
+      summary: Apply a tenant policy after governance approval
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantPolicyRequest'
+      responses:
+        '200':
+          description: Tenant updated with new policy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/trust-registry:
+    post:
+      tags:
+      - Trust
+      summary: Create or update a trust registry entry in draft or pending state
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrustRegistryRequest'
+            examples:
+              internal-trust:
+                $ref: '#/components/examples/internal-trust-request'
+              bitcoin-hybrid-trust:
+                $ref: '#/components/examples/bitcoin-hybrid-trust-request'
+              ethereum-hybrid-trust:
+                $ref: '#/components/examples/ethereum-hybrid-trust-request'
+      responses:
+        '200':
+          description: Trust registry entry stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustRegistryRecord'
+              examples:
+                internal-trust:
+                  $ref: '#/components/examples/internal-trust-response'
+                bitcoin-hybrid-trust:
+                  $ref: '#/components/examples/bitcoin-hybrid-trust-response'
+                ethereum-hybrid-trust:
+                  $ref: '#/components/examples/ethereum-hybrid-trust-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Trust
+      summary: Query trust registry entries
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantQuery'
+      - name: registryId
+        in: query
+        schema:
+          type: string
+      - name: entityType
+        in: query
+        schema:
+          type: string
+      - name: entityId
+        in: query
+        schema:
+          type: string
+      - name: did
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: trustFrameworkId
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Trust registry entries returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrustRegistryRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/trust-registry/{id}/activate:
+    post:
+      tags:
+      - Trust
+      summary: Activate a trust registry entry after governance approval
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Trust registry entry activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustRegistryRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/trust-registry/{id}:
+    get:
+      tags:
+      - Trust
+      summary: Get trust registry entry by id
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Trust registry entry returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustRegistryRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/governance/proposals:
+    post:
+      tags:
+      - Governance
+      summary: Create a governance proposal
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GovernanceProposalRequest'
+            examples:
+              internal-governance:
+                $ref: '#/components/examples/internal-governance-request'
+              ethereum-governance:
+                $ref: '#/components/examples/ethereum-governance-request'
+      responses:
+        '200':
+          description: Governance proposal created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernanceProposal'
+              examples:
+                internal-governance:
+                  $ref: '#/components/examples/internal-governance-response'
+                ethereum-governance:
+                  $ref: '#/components/examples/ethereum-governance-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Governance
+      summary: Query governance proposals
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantQuery'
+      responses:
+        '200':
+          description: List of governance proposals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GovernanceProposal'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/governance/proposals/{id}:
+    get:
+      tags:
+      - Governance
+      summary: Get governance proposal
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Governance proposal returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernanceProposal'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/governance/proposals/{id}/approve:
+    post:
+      tags:
+      - Governance
+      summary: Approve a governance proposal
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GovernanceApprovalRequest'
+            examples:
+              internal-governance-approval:
+                $ref: '#/components/examples/internal-governance-approval-request'
+      responses:
+        '200':
+          description: Governance proposal updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernanceProposal'
+              examples:
+                internal-governance-approved:
+                  $ref: '#/components/examples/internal-governance-approved-response'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/protocols/{protocol}/metadata:
+    get:
+      tags:
+      - Protocols
+      summary: Get protocol metadata
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Protocol'
+      security: []
+      responses:
+        '200':
+          description: Protocol metadata returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocolMetadata'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/protocols/{protocol}/sessions:
+    post:
+      tags:
+      - Protocols
+      summary: Create a protocol session
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Protocol'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProtocolSessionRequest'
+            examples:
+              internal-oidc4vci:
+                $ref: '#/components/examples/internal-oidc4vci-session-request'
+              ethereum-oidc4vp:
+                $ref: '#/components/examples/ethereum-oidc4vp-session-request'
+      responses:
+        '200':
+          description: Protocol session created synchronously
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocolSession'
+              examples:
+                internal-oidc4vci:
+                  $ref: '#/components/examples/internal-oidc4vci-session-response'
+        '202':
+          description: Protocol session accepted for worker-backed processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocolSession'
+              examples:
+                internal-oidc4vci:
+                  $ref: '#/components/examples/internal-oidc4vci-session-response'
+                ethereum-oidc4vp:
+                  $ref: '#/components/examples/ethereum-oidc4vp-session-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/protocols/sessions/{id}:
+    get:
+      tags:
+      - Protocols
+      summary: Get protocol session
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Protocol session returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocolSession'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/protocols/deferred/{transactionId}:
+    get:
+      tags:
+      - Protocols
+      summary: Get deferred exchange state
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - name: transactionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Deferred exchange returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeferredExchange'
+              examples:
+                internal-deferred-exchange:
+                  $ref: '#/components/examples/internal-deferred-exchange-response'
+                ethereum-deferred-exchange:
+                  $ref: '#/components/examples/ethereum-deferred-exchange-response'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/audit:
+    get:
+      tags:
+      - Audit
+      summary: List audit events
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantQuery'
+      responses:
+        '200':
+          description: Audit events returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditEvent'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/audit/{id}:
+    get:
+      tags:
+      - Audit
+      summary: Get audit event by id
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Audit event returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEvent'
+              examples:
+                internal-audit-event:
+                  $ref: '#/components/examples/internal-audit-event-response'
+                ethereum-audit-event:
+                  $ref: '#/components/examples/ethereum-audit-event-response'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /revocation/lists:
+    post:
+      tags:
+      - Revocation
+      summary: Create a revocation list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevocationListCreateRequest'
+            examples:
+              internal-revocation-list:
+                $ref: '#/components/examples/internal-revocation-list-request'
+      responses:
+        '201':
+          description: Revocation list created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationList'
+              examples:
+                internal-revocation-list:
+                  $ref: '#/components/examples/internal-revocation-list-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+      - Revocation
+      summary: List revocation lists
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 20
+      responses:
+        '200':
+          description: Revocation lists returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRevocationLists'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /revocation/lists/{listId}:
+    get:
+      tags:
+      - Revocation
+      summary: Get revocation list by id
+      parameters:
+      - name: listId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Revocation list returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /revocation/lists/{listId}/revoke:
+    post:
+      tags:
+      - Revocation
+      summary: Revoke a credential inside a revocation list
+      parameters:
+      - name: listId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevokeCredentialRequest'
+            examples:
+              internal-revoke-credential:
+                $ref: '#/components/examples/internal-revoke-credential-request'
+      responses:
+        '200':
+          description: Revocation list updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationList'
+              examples:
+                internal-revoked-list:
+                  $ref: '#/components/examples/internal-revoked-list-response'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /{driver}/trust:
+    post:
+      tags:
+      - Trust
+      summary: Create or update a trust registry entry in draft or pending state (legacy alias)
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrustRegistryRequest'
+            examples:
+              internal-trust:
+                $ref: '#/components/examples/internal-trust-request'
+              bitcoin-hybrid-trust:
+                $ref: '#/components/examples/bitcoin-hybrid-trust-request'
+              ethereum-hybrid-trust:
+                $ref: '#/components/examples/ethereum-hybrid-trust-request'
+      responses:
+        '200':
+          description: Trust registry entry stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustRegistryRecord'
+              examples:
+                internal-trust:
+                  $ref: '#/components/examples/internal-trust-response'
+                bitcoin-hybrid-trust:
+                  $ref: '#/components/examples/bitcoin-hybrid-trust-response'
+                ethereum-hybrid-trust:
+                  $ref: '#/components/examples/ethereum-hybrid-trust-response'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      deprecated: true
+    get:
+      tags:
+      - Trust
+      summary: Query trust registry entries (legacy alias)
+      parameters:
+      - $ref: '#/components/parameters/Driver'
+      - $ref: '#/components/parameters/TenantQuery'
+      - name: registryId
+        in: query
+        schema:
+          type: string
+      - name: entityType
+        in: query
+        schema:
+          type: string
+      - name: entityId
+        in: query
+        schema:
+          type: string
+      - name: did
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: trustFrameworkId
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Trust registry entries returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrustRegistryRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      deprecated: true
+  /system/health:
+    get:
+      tags:
+      - System
+      summary: Liveness and dependency health
+      security: []
+      responses:
+        '200':
+          description: Health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptimeSeconds:
+                    type: integer
+                  database:
+                    type: object
+  /system/status:
+    get:
+      tags:
+      - System
+      summary: Operational system status and driver readiness
+      responses:
+        '200':
+          description: Detailed system status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptimeSeconds:
+                    type: integer
+                  service:
+                    type: object
+                  database:
+                    type: object
+                  drivers:
+                    type: array
+                    items:
+                      type: object
+                  session:
+                    type: object
+  /system/session:
+    get:
+      tags:
+      - System
+      summary: Resolved authentication and tenant session context
+      security: []
+      responses:
+        '200':
+          description: Current session context
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authenticated:
+                    type: boolean
+                  subject:
+                    type: string
+                  tenantId:
+                    type: string
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                  authRequired:
+                    type: boolean
+                  tenantRequired:
+                    type: boolean
+                  timestamp:
+                    type: string
+                    format: date-time
+  /{driver}/protocols/oidc4vci/.well-known/openid-credential-issuer:
+    get:
+      tags:
+      - Protocol
+      summary: Public OIDC4VCI issuer metadata
+      security: []
+      responses:
+        '200':
+          description: Credential issuer metadata
+  /{driver}/protocols/oidc4vci/.well-known/openid-configuration:
+    get:
+      tags:
+      - Protocol
+      summary: Public OIDC4VCI authorization server metadata
+      security: []
+      responses:
+        '200':
+          description: OAuth authorization server metadata
+  /{driver}/protocols/oidc4vci/jwks:
+    get:
+      tags:
+      - Protocol
+      summary: Public OIDC4VCI JWKS
+      security: []
+      responses:
+        '200':
+          description: JSON Web Key Set
+  /{driver}/protocols/oidc4vci/authorize:
+    post:
+      tags:
+      - Protocol
+      summary: Create a public OIDC4VCI issuance authorization session
+      security: []
+      requestBody:
+        required: true
+      responses:
+        '200':
+          description: Issuance authorization details
+  /{driver}/protocols/oidc4vci/token:
+    post:
+      tags:
+      - Protocol
+      summary: Exchange an OIDC4VCI code for a JWT access token
+      security: []
+      requestBody:
+        required: true
+      responses:
+        '200':
+          description: Access token issued
+  /{driver}/protocols/oidc4vci/credential:
+    post:
+      tags:
+      - Protocol
+      summary: Issue a credential through the public OIDC4VCI endpoint
+      requestBody:
+        required: true
+      responses:
+        '200':
+          description: Credential issued
+        '202':
+          description: Deferred issuance accepted
+  /{driver}/protocols/oidc4vci/credential/deferred:
+    post:
+      tags:
+      - Protocol
+      summary: Poll a deferred OIDC4VCI credential transaction
+      responses:
+        '200':
+          description: Deferred credential now available
+        '202':
+          description: Deferred credential still pending
+  /{driver}/protocols/oidc4vp/.well-known/openid-configuration:
+    get:
+      tags:
+      - Protocol
+      summary: Public OIDC4VP verifier metadata
+      security: []
+      responses:
+        '200':
+          description: Verifier metadata
+  /{driver}/protocols/oidc4vp/jwks:
+    get:
+      tags:
+      - Protocol
+      summary: Public OIDC4VP JWKS
+      security: []
+      responses:
+        '200':
+          description: JSON Web Key Set
+  /{driver}/protocols/oidc4vp/authorize:
+    post:
+      tags:
+      - Protocol
+      summary: Create a public OIDC4VP presentation request session
+      security: []
+      requestBody:
+        required: true
+      responses:
+        '200':
+          description: Presentation request created
+  /{driver}/protocols/oidc4vp/requests/{id}:
+    get:
+      tags:
+      - Protocol
+      summary: Resolve a public OIDC4VP request object
+      security: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Presentation request returned
+  /{driver}/protocols/oidc4vp/callback:
+    post:
+      tags:
+      - Protocol
+      summary: Submit a presentation to the public OIDC4VP verifier callback
+      security: []
+      requestBody:
+        required: true
+      responses:
+        '200':
+          description: Presentation verification result returned
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Driver:
+      name: driver
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - internal
+        - ethereum
+        - bitcoin
+    Protocol:
+      name: protocol
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+        - aries
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    Did:
+      name: did
+      in: path
+      required: true
+      schema:
+        type: string
+    TenantQuery:
+      name: tenantId
+      in: query
+      required: false
+      schema:
+        type: string
+    TenantHeader:
+      name: x-tenant-id
+      in: header
+      required: false
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  examples:
+    internal-key-issuer-request:
+      summary: Internal issuer onboarding using did:key
+      value:
+        name: Internal Issuer
+        did: did:key:z6MkinternalIssuer111
+        didMethod: key
+        tenantId: tenant:internal-demo
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+    internal-key-issuer-response:
+      summary: Internal issuer onboarding response
+      value:
+        kind: issuer
+        id: issuer:1711470000000
+        tenantId: tenant:internal-demo
+        name: Internal Issuer
+        did: did:key:z6MkinternalIssuer111
+        didMethod: key
+        registryType: internal
+        status: pending
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+    ethereum-ethr-issuer-request:
+      summary: Ethereum issuer onboarding using did:ethr
+      value:
+        name: Ethereum Issuer
+        did: did:ethr:0x1111111111111111111111111111111111111111
+        didMethod: ethr
+        tenantId: tenant:ethereum-demo
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+    ethereum-ethr-issuer-response:
+      summary: Ethereum issuer onboarding response
+      value:
+        kind: issuer
+        id: issuer:1711470100000
+        tenantId: tenant:ethereum-demo
+        name: Ethereum Issuer
+        did: did:ethr:0x1111111111111111111111111111111111111111
+        didMethod: ethr
+        registryType: hybrid
+        status: pending
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+        metadata:
+          driver: ethereum
+          network: ethereum
+    internal-wallet-request:
+      summary: Internal wallet onboarding
+      value:
+        name: Internal Wallet
+        walletType: internal
+        did: did:key:z6MkinternalWallet111
+        didMethod: key
+        tenantId: tenant:internal-demo
+        holderId: holder:internal-user-1
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+    internal-wallet-response:
+      summary: Internal wallet onboarding response
+      value:
+        wallet:
+          kind: wallet
+          id: wallet:1711470000002
+          tenantId: tenant:internal-demo
+          name: Internal Wallet
+          did: did:key:z6MkinternalWallet111
+          didMethod: key
+          registryType: internal
+          status: active
+          walletType: internal
+          holderId: holder:internal-user-1
+        key:
+          id: key:123
+          publicKey: 9d5fcb9f1d4b7c40c9f6d8b1b8b886e0
+    ethereum-wallet-request:
+      summary: Ethereum wallet onboarding
+      value:
+        name: Ethereum Wallet
+        walletType: blockchain
+        did: did:pkh:eip155:31337:0x3333333333333333333333333333333333333333
+        didMethod: pkh
+        tenantId: tenant:ethereum-demo
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+    ethereum-wallet-response:
+      summary: Ethereum wallet onboarding response
+      value:
+        wallet:
+          kind: wallet
+          id: wallet:1711470100002
+          tenantId: tenant:ethereum-demo
+          name: Ethereum Wallet
+          did: did:pkh:eip155:31337:0x3333333333333333333333333333333333333333
+          didMethod: pkh
+          registryType: internal
+          status: active
+          walletType: blockchain
+          metadata:
+            driver: ethereum
+            network: ethereum
+        key:
+          id: key:456
+          publicKey: aabbccddeeff00112233445566778899
+    bitcoin-wallet-request:
+      summary: Bitcoin wallet onboarding
+      value:
+        name: Bitcoin Wallet
+        walletType: blockchain
+        did: did:pkh:bip122:000000000019d6689c085ae165831e93:1BitcoinEaterAddressDontSendf59kuE
+        didMethod: pkh
+        tenantId: tenant:bitcoin-demo
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+    bitcoin-wallet-response:
+      summary: Bitcoin wallet onboarding response
+      value:
+        wallet:
+          kind: wallet
+          id: wallet:1711470150002
+          tenantId: tenant:bitcoin-demo
+          name: Bitcoin Wallet
+          did: did:pkh:bip122:000000000019d6689c085ae165831e93:1BitcoinEaterAddressDontSendf59kuE
+          didMethod: pkh
+          registryType: internal
+          status: active
+          walletType: blockchain
+          metadata:
+            driver: bitcoin
+            network: bitcoin
+        key:
+          id: key:789
+          publicKey: bbccddeeff00112233445566778899aa
+    internal-vc-jwt-request:
+      summary: Internal direct issuance using VC-JWT
+      value:
+        tenantId: tenant:internal-demo
+        format: vc-jwt
+        issuerDid: did:key:z6MkinternalIssuer111
+        holderDid: did:key:z6MkinternalWallet111
+        schema:
+          id: schema:internal-employee-card
+        templateId: tpl:internal-employee-card
+        claims:
+          givenName: Sagar
+          role: Engineer
+          employeeId: EMP-001
+        proofType: JwtProof2020
+        status:
+          listId: status:internal-main
+          profile: statuslist2021
+          purpose: revocation
+          status: valid
+    internal-vc-jwt-response:
+      summary: VC-JWT issuance response
+      value:
+        format: vc-jwt
+        credential: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.payload.signature
+        record:
+          id: cred:1711470001000
+          tenantId: tenant:internal-demo
+          issuerDid: did:key:z6MkinternalIssuer111
+          proofType: JwtProof2020
+          hash: 2a7c6dcdacff3180df4ab7c0c860d5cb
+          format: vc-jwt
+          schema:
+            id: schema:internal-employee-card
+          template:
+            id: tpl:internal-employee-card
+    ethereum-vc-ldp-request:
+      summary: Ethereum hybrid issuance using VC-LDP
+      value:
+        tenantId: tenant:ethereum-demo
+        format: vc-ldp
+        issuerDid: did:ethr:0x1111111111111111111111111111111111111111
+        holderDid: did:pkh:eip155:31337:0x3333333333333333333333333333333333333333
+        schema:
+          id: schema:ethereum-employee-card
+        templateId: tpl:ethereum-employee-card
+        claims:
+          givenName: Sagar
+          role: Engineer
+          employeeId: EMP-ETH-001
+        proofType: Ed25519Signature2020
+    ethereum-vc-ldp-response:
+      summary: Ethereum VC-LDP issuance response
+      value:
+        format: vc-ldp
+        credential:
+          '@context':
+          - https://www.w3.org/2018/credentials/v1
+          type:
+          - VerifiableCredential
+          issuer: did:ethr:0x1111111111111111111111111111111111111111
+          proof:
+            type: Ed25519Signature2020
+            proofPurpose: assertionMethod
+        record:
+          id: cred:1711470101000
+          tenantId: tenant:ethereum-demo
+          issuerDid: did:ethr:0x1111111111111111111111111111111111111111
+          format: vc-ldp
+          metadata:
+            driver: ethereum
+            network: ethereum
+    internal-trust-request:
+      summary: Internal trust registry entry
+      value:
+        id: trust:internal-issuer
+        tenantId: tenant:internal-demo
+        registryId: registry:internal-main
+        entityType: issuer
+        entityId: issuer:internal
+        did: did:key:z6MkinternalIssuer111
+        name: Internal Issuer Trust Entry
+        status: pending
+        trustFrameworkId: tf:internal
+    internal-trust-response:
+      summary: Internal trust registry response
+      value:
+        id: trust:internal-issuer
+        tenantId: tenant:internal-demo
+        registryId: registry:internal-main
+        entityType: issuer
+        entityId: issuer:internal
+        did: did:key:z6MkinternalIssuer111
+        name: Internal Issuer Trust Entry
+        status: pending
+        trustFrameworkId: tf:internal
+    bitcoin-hybrid-trust-request:
+      summary: Bitcoin hybrid trust registry entry
+      value:
+        id: trust:bitcoin-issuer
+        tenantId: tenant:bitcoin-demo
+        registryId: registry:bitcoin-main
+        entityType: issuer
+        entityId: issuer:bitcoin
+        did: did:pkh:bip122:000000000019d6689c085ae165831e93:1BoatSLRHtKNngkdXEeobR76b53LETtpyT
+        name: Bitcoin Issuer Trust Entry
+        status: pending
+        trustFrameworkId: tf:bitcoin
+    bitcoin-hybrid-trust-response:
+      summary: Bitcoin hybrid trust registry response
+      value:
+        id: trust:bitcoin-issuer
+        tenantId: tenant:bitcoin-demo
+        registryId: registry:bitcoin-main
+        entityType: issuer
+        entityId: issuer:bitcoin
+        did: did:pkh:bip122:000000000019d6689c085ae165831e93:1BoatSLRHtKNngkdXEeobR76b53LETtpyT
+        name: Bitcoin Issuer Trust Entry
+        status: pending
+        metadata:
+          driver: bitcoin
+          network: bitcoin
+    ethereum-hybrid-trust-request:
+      summary: Ethereum hybrid trust registry entry
+      value:
+        id: trust:ethereum-issuer
+        tenantId: tenant:ethereum-demo
+        registryId: registry:ethereum-main
+        entityType: issuer
+        entityId: issuer:ethereum
+        did: did:ethr:0x1111111111111111111111111111111111111111
+        name: Ethereum Issuer Trust Entry
+        status: pending
+        trustFrameworkId: tf:ethereum
+    ethereum-hybrid-trust-response:
+      summary: Ethereum hybrid trust registry response
+      value:
+        id: trust:ethereum-issuer
+        tenantId: tenant:ethereum-demo
+        registryId: registry:ethereum-main
+        entityType: issuer
+        entityId: issuer:ethereum
+        did: did:ethr:0x1111111111111111111111111111111111111111
+        name: Ethereum Issuer Trust Entry
+        status: pending
+        metadata:
+          driver: ethereum
+          network: ethereum
+    internal-governance-request:
+      summary: Internal governance proposal
+      value:
+        proposalId: gov:internal-issuer-approval
+        tenantId: tenant:internal-demo
+        issuerDid: did:key:z6MkinternalIssuer111
+        governanceType: admin
+        subjectType: issuer
+        subjectId: issuer:internal
+        requiredApprovals: 1
+    internal-governance-response:
+      summary: Internal governance proposal created
+      value:
+        proposalId: gov:internal-issuer-approval
+        tenantId: tenant:internal-demo
+        issuerDid: did:key:z6MkinternalIssuer111
+        governanceType: admin
+        status: pending
+        subjectType: issuer
+        subjectId: issuer:internal
+        requiredApprovals: 1
+        approvals: []
+    ethereum-governance-request:
+      summary: Ethereum governance proposal
+      value:
+        proposalId: gov:ethereum-issuer-approval
+        tenantId: tenant:ethereum-demo
+        issuerDid: did:ethr:0x1111111111111111111111111111111111111111
+        governanceType: admin
+        subjectType: issuer
+        subjectId: issuer:ethereum
+        requiredApprovals: 1
+    ethereum-governance-response:
+      summary: Ethereum governance proposal response
+      value:
+        proposalId: gov:ethereum-issuer-approval
+        tenantId: tenant:ethereum-demo
+        issuerDid: did:ethr:0x1111111111111111111111111111111111111111
+        governanceType: admin
+        status: pending
+        subjectType: issuer
+        subjectId: issuer:ethereum
+        requiredApprovals: 1
+        approvals: []
+        metadata:
+          driver: ethereum
+    internal-governance-approval-request:
+      summary: Governance approval request
+      value:
+        approverDid: did:key:z6MkinternalGovernor111
+        signature: sig:governance-approval-example
+    internal-governance-approved-response:
+      summary: Governance proposal after approval
+      value:
+        proposalId: gov:internal-issuer-approval
+        tenantId: tenant:internal-demo
+        issuerDid: did:key:z6MkinternalIssuer111
+        governanceType: admin
+        status: approved
+        subjectType: issuer
+        subjectId: issuer:internal
+        requiredApprovals: 1
+        approvals:
+        - approverDid: did:key:z6MkinternalGovernor111
+          approvedAt: '2026-03-26T12:05:00.000Z'
+          signature: sig:governance-approval-example
+    internal-oidc4vci-session-request:
+      summary: Internal OIDC4VCI session request
+      value:
+        tenantId: tenant:internal-demo
+        issuerDid: did:key:z6MkinternalIssuer111
+        holderDid: did:key:z6MkinternalWallet111
+        schemaId: schema:internal-employee-card
+        format: vc-jwt
+        claims:
+          givenName: Sagar
+          role: Engineer
+          employeeId: EMP-OIDC4VCI
+        enqueue: true
+    internal-oidc4vci-session-response:
+      summary: Internal worker-backed OIDC4VCI session
+      value:
+        id: session:1711470003000
+        protocol: oidc4vci
+        tenantId: tenant:internal-demo
+        issuerDid: did:key:z6MkinternalIssuer111
+        holderDid: did:key:z6MkinternalWallet111
+        state: created
+        authorizationCode: auth:1711470003000
+        preAuthorizedCode: preauth:1711470003000
+        metadata:
+          driver: internal
+          processingMode: worker-backed
+          workerJobId: job:1711470003000
+    ethereum-oidc4vp-session-request:
+      summary: Ethereum OIDC4VP session request
+      value:
+        tenantId: tenant:ethereum-demo
+        verifierDid: did:ethr:0x2222222222222222222222222222222222222222
+        holderDid: did:pkh:eip155:31337:0x3333333333333333333333333333333333333333
+        format: vc-ldp
+        challenge: challenge-eth-oidc4vp-001
+        enqueue: true
+    ethereum-oidc4vp-session-response:
+      summary: Ethereum worker-backed OIDC4VP session
+      value:
+        id: session:1711470103000
+        protocol: oidc4vp
+        tenantId: tenant:ethereum-demo
+        verifierDid: did:ethr:0x2222222222222222222222222222222222222222
+        holderDid: did:pkh:eip155:31337:0x3333333333333333333333333333333333333333
+        state: created
+        challenge: challenge-eth-oidc4vp-001
+        metadata:
+          driver: ethereum
+          processingMode: worker-backed
+          workerJobId: job:1711470103000
+    internal-presentation-verify-request:
+      summary: Internal presentation verification request
+      value:
+        presentation:
+          id: vp:1711470002000
+        format: mixed
+        challenge: challenge-internal-001
+        domain: internal.example
+        resolveStatus: true
+        verifyTrustChain: true
+    internal-presentation-verify-response:
+      summary: Internal presentation verification response
+      value:
+        valid: true
+        format: mixed
+        checks:
+          holderBinding: true
+          challenge: true
+          domain: true
+          credentials: true
+          status: true
+          trust: true
+          disclosure: true
+        errors: []
+        record:
+          id: vp:1711470002000
+          tenantId: tenant:internal-demo
+          holderDid: did:key:z6MkinternalWallet111
+          verifierDid: did:key:z6MkinternalVerifier111
+          format: mixed
+    ethereum-presentation-verify-request:
+      summary: Ethereum hybrid presentation verification request
+      value:
+        presentation:
+          id: vp:1711470102000
+        format: mixed
+        challenge: challenge-eth-001
+        domain: ethereum.example
+        resolveStatus: true
+        verifyTrustChain: true
+    ethereum-presentation-verify-response:
+      summary: Ethereum hybrid presentation verification response
+      value:
+        valid: true
+        format: mixed
+        checks:
+          holderBinding: true
+          challenge: true
+          domain: true
+          credentials: true
+          status: true
+          trust: true
+          disclosure: true
+        errors: []
+        record:
+          id: vp:1711470102000
+          tenantId: tenant:ethereum-demo
+          holderDid: did:pkh:eip155:31337:0x3333333333333333333333333333333333333333
+          verifierDid: did:ethr:0x2222222222222222222222222222222222222222
+          format: mixed
+    internal-deferred-exchange-response:
+      summary: Internal deferred exchange lookup
+      value:
+        transactionId: auth:1711470003000
+        protocol: oidc4vci
+        sessionId: session:1711470003000
+        credentialFormat: vc-jwt
+        state: ready
+        subjectId: did:key:z6MkinternalWallet111
+        expiresAt: '2026-03-26T12:20:00.000Z'
+        metadata:
+          driver: internal
+          processingMode: worker-backed
+    ethereum-deferred-exchange-response:
+      summary: Ethereum deferred exchange lookup
+      value:
+        transactionId: auth:1711470103000
+        protocol: oidc4vci
+        sessionId: session:1711470103000
+        credentialFormat: vc-ldp
+        state: pending
+        subjectId: did:pkh:eip155:31337:0x3333333333333333333333333333333333333333
+        expiresAt: '2026-03-26T12:30:00.000Z'
+        metadata:
+          driver: ethereum
+          processingMode: worker-backed
+    internal-audit-event-response:
+      summary: Internal audit event response
+      value:
+        id: audit:1711470004000
+        tenantId: tenant:internal-demo
+        actorDid: did:key:z6MkinternalIssuer111
+        driver: internal
+        protocol: oidc4vci
+        eventType: credential.issued
+        severity: info
+        subjectType: credential
+        subjectId: cred:1711470001000
+        action: credential.issued
+        status: success
+        correlationId: corr:demo-001
+        occurredAt: '2026-03-26T12:06:00.000Z'
+        details:
+          format: vc-jwt
+          source: flow-testing
+        hash: 59b3df4c2771ca8b56f762b7a2a0ea69
+        createdAt: '2026-03-26T12:06:00.000Z'
+        updatedAt: '2026-03-26T12:06:00.000Z'
+    ethereum-audit-event-response:
+      summary: Ethereum audit event response
+      value:
+        id: audit:1711470104000
+        tenantId: tenant:ethereum-demo
+        actorDid: did:ethr:0x1111111111111111111111111111111111111111
+        driver: ethereum
+        protocol: oidc4vp
+        eventType: protocol.session.updated
+        severity: info
+        subjectType: protocol-session
+        subjectId: session:1711470103000
+        action: worker.process
+        status: success
+        occurredAt: '2026-03-26T12:16:00.000Z'
+        details:
+          workerJobId: job:1711470103000
+          protocol: oidc4vp
+          network: ethereum
+        hash: 7f0ba4cd6b789943e00ab8f7ce62a831
+        createdAt: '2026-03-26T12:16:00.000Z'
+        updatedAt: '2026-03-26T12:16:00.000Z'
+    internal-revocation-list-request:
+      summary: Create revocation list request
+      value:
+        issuerDid: did:key:z6MkinternalIssuer111
+        tenantId: tenant:internal-demo
+        statusListUri: http://localhost:4000/status/internal-main
+    internal-revocation-list-response:
+      summary: Revocation list created
+      value:
+        id: revocation:1711470005000
+        issuerDid: did:key:z6MkinternalIssuer111
+        tenantId: tenant:internal-demo
+        statusListUri: http://localhost:4000/status/internal-main
+        statusListId: status:internal-main
+        entries: []
+    internal-revoke-credential-request:
+      summary: Revoke a credential request
+      value:
+        credentialId: cred:1711470001000
+    internal-revoked-list-response:
+      summary: Revocation list after credential revocation
+      value:
+        id: revocation:1711470005000
+        issuerDid: did:key:z6MkinternalIssuer111
+        tenantId: tenant:internal-demo
+        statusListUri: http://localhost:4000/status/internal-main
+        statusListId: status:internal-main
+        entries:
+        - credentialId: cred:1711470001000
+          status: revoked
+          updatedAt: '2026-03-26T12:15:00.000Z'
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+      example:
+        error: Issuer onboarding is not supported by this driver
+    Metadata:
+      type: object
+      additionalProperties: true
+      example:
+        source: flow-testing
+        environment: local
+    KeyRef:
+      type: object
+      additionalProperties: true
+      example:
+        id: key:123
+        publicKey: 9d5fcb9f1d4b7c40c9f6d8b1b8b886e0
+    TrustFrameworkMembership:
+      type: object
+      additionalProperties: true
+      example:
+        trustFrameworkId: tf:internal
+        trustFrameworkName: Internal Trust Framework
+        roles:
+        - issuer
+        memberStatus: active
+    IssuerOnboardRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        did:
+          type: string
+        didMethod:
+          type: string
+        publicKey:
+          type: string
+        publicKeyJwk:
+          type: object
+          additionalProperties: true
+        tenantId:
+          type: string
+        supportedFormats:
+          type: array
+          items:
+            type: string
+        supportedProtocols:
+          type: array
+          items:
+            type: string
+        trustFrameworkMemberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrustFrameworkMembership'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+      - name
+      example:
+        name: Internal Issuer
+        did: did:key:z6MkinternalIssuer111
+        didMethod: key
+        tenantId: tenant:internal-demo
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+        trustFrameworkMemberships:
+        - trustFrameworkId: tf:internal
+          trustFrameworkName: Internal Trust Framework
+          roles:
+          - issuer
+          memberStatus: active
+        metadata:
+          source: flow-testing
+          environment: local
+    IssuerRecord:
+      type: object
+      properties:
+        kind:
+          type: string
+        id:
+          type: string
+        tenantId:
+          type: string
+        name:
+          type: string
+        did:
+          type: string
+        didMethod:
+          type: string
+        registryType:
+          type: string
+        status:
+          type: string
+        supportedFormats:
+          type: array
+          items:
+            type: string
+        supportedProtocols:
+          type: array
+          items:
+            type: string
+        trustFrameworkMemberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrustFrameworkMembership'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        kind: issuer
+        id: issuer:1711470000000
+        tenantId: tenant:internal-demo
+        name: Internal Issuer
+        did: did:key:z6MkinternalIssuer111
+        didMethod: key
+        registryType: internal
+        status: pending
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+        trustFrameworkMemberships:
+        - trustFrameworkId: tf:internal
+          roles:
+          - issuer
+          memberStatus: active
+        metadata:
+          source: flow-testing
+    VerifierOnboardRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        did:
+          type: string
+        didMethod:
+          type: string
+        publicKey:
+          type: string
+        publicKeyJwk:
+          type: object
+          additionalProperties: true
+        tenantId:
+          type: string
+        supportedPresentationProfiles:
+          type: array
+          items:
+            type: string
+        trustFrameworkMemberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrustFrameworkMembership'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+      - name
+      example:
+        name: Internal Verifier
+        did: did:key:z6MkinternalVerifier111
+        didMethod: key
+        tenantId: tenant:internal-demo
+        supportedPresentationProfiles:
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+        trustFrameworkMemberships:
+        - trustFrameworkId: tf:internal
+          roles:
+          - verifier
+          memberStatus: active
+        metadata:
+          source: flow-testing
+    VerifierRecord:
+      type: object
+      properties:
+        kind:
+          type: string
+        id:
+          type: string
+        tenantId:
+          type: string
+        name:
+          type: string
+        did:
+          type: string
+        didMethod:
+          type: string
+        registryType:
+          type: string
+        status:
+          type: string
+        supportedPresentationProfiles:
+          type: array
+          items:
+            type: string
+        trustFrameworkMemberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrustFrameworkMembership'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        kind: verifier
+        id: verifier:1711470000001
+        tenantId: tenant:internal-demo
+        name: Internal Verifier
+        did: did:key:z6MkinternalVerifier111
+        didMethod: key
+        registryType: internal
+        status: pending
+        supportedPresentationProfiles:
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+        trustFrameworkMemberships:
+        - trustFrameworkId: tf:internal
+          roles:
+          - verifier
+          memberStatus: active
+        metadata:
+          source: flow-testing
+    WalletOnboardRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - Ed25519
+          - Secp256k1
+        walletType:
+          type: string
+          enum:
+          - internal
+          - blockchain
+          - external
+        did:
+          type: string
+        didMethod:
+          type: string
+        tenantId:
+          type: string
+        holderId:
+          type: string
+        supportedFormats:
+          type: array
+          items:
+            type: string
+        supportedProtocols:
+          type: array
+          items:
+            type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        name: Internal Wallet
+        walletType: internal
+        did: did:key:z6MkinternalWallet111
+        didMethod: key
+        tenantId: tenant:internal-demo
+        holderId: holder:internal-user-1
+        supportedFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedProtocols:
+        - oidc4vci
+        - oidc4vp
+        - siopv2
+        - dcql
+        - didcomm-v2
+        metadata:
+          source: flow-testing
+    WalletRecord:
+      type: object
+      properties:
+        kind:
+          type: string
+        id:
+          type: string
+        tenantId:
+          type: string
+        name:
+          type: string
+        did:
+          type: string
+        didMethod:
+          type: string
+        registryType:
+          type: string
+        status:
+          type: string
+        walletType:
+          type: string
+        address:
+          type: string
+        holderId:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        kind: wallet
+        id: wallet:1711470000002
+        tenantId: tenant:internal-demo
+        name: Internal Wallet
+        did: did:key:z6MkinternalWallet111
+        didMethod: key
+        registryType: internal
+        status: active
+        walletType: internal
+        holderId: holder:internal-user-1
+        metadata:
+          source: flow-testing
+    WalletOnboardResponse:
+      type: object
+      properties:
+        wallet:
+          $ref: '#/components/schemas/WalletRecord'
+        key:
+          $ref: '#/components/schemas/KeyRef'
+      example:
+        wallet:
+          kind: wallet
+          id: wallet:1711470000002
+          tenantId: tenant:internal-demo
+          name: Internal Wallet
+          did: did:key:z6MkinternalWallet111
+          didMethod: key
+          registryType: internal
+          status: active
+          walletType: internal
+        key:
+          id: key:123
+          publicKey: 9d5fcb9f1d4b7c40c9f6d8b1b8b886e0
+    SchemaRegisterRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        tenantId:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        format:
+          type: string
+        definition:
+          type: object
+          additionalProperties: true
+        uri:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+      - name
+      - definition
+      example:
+        id: schema:internal-employee-card
+        tenantId: tenant:internal-demo
+        name: Internal Employee Card
+        version: 1.0.0
+        format: json-schema
+        definition:
+          type: object
+          properties:
+            givenName:
+              type: string
+            role:
+              type: string
+            employeeId:
+              type: string
+          required:
+          - givenName
+          - role
+          - employeeId
+        metadata:
+          source: flow-testing
+    SchemaRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        tenantId:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        format:
+          type: string
+        registryType:
+          type: string
+        definition:
+          type: object
+          additionalProperties: true
+        uri:
+          type: string
+        hash:
+          type: string
+        active:
+          type: boolean
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: schema:internal-employee-card
+        tenantId: tenant:internal-demo
+        name: Internal Employee Card
+        version: 1.0.0
+        format: json-schema
+        registryType: internal
+        definition:
+          type: object
+          properties:
+            givenName:
+              type: string
+            role:
+              type: string
+            employeeId:
+              type: string
+        hash: 7d76bfecbb615dedcb2f3d96a0717f95
+        active: false
+        metadata:
+          source: flow-testing
+        createdAt: '2026-03-26T12:00:00.000Z'
+        updatedAt: '2026-03-26T12:00:00.000Z'
+    TemplateRegisterRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        tenantId:
+          type: string
+        title:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        schemaId:
+          type: string
+        format:
+          type: string
+        defaults:
+          type: object
+          additionalProperties: true
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+      - schemaId
+      example:
+        id: tpl:internal-employee-card
+        tenantId: tenant:internal-demo
+        title: Internal Employee Card Template
+        description: Demo template for employee cards
+        schemaId: schema:internal-employee-card
+        format: vc-jwt
+        defaults:
+          issuerName: Internal Issuer
+        metadata:
+          source: flow-testing
+    TemplateRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        tenantId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        schemaId:
+          type: string
+        format:
+          type: string
+        defaults:
+          type: object
+          additionalProperties: true
+        registryType:
+          type: string
+        enabled:
+          type: boolean
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: tpl:internal-employee-card
+        tenantId: tenant:internal-demo
+        title: Internal Employee Card Template
+        description: Demo template for employee cards
+        schemaId: schema:internal-employee-card
+        format: vc-jwt
+        defaults:
+          issuerName: Internal Issuer
+        registryType: internal
+        enabled: false
+        metadata:
+          source: flow-testing
+        createdAt: '2026-03-26T12:00:00.000Z'
+        updatedAt: '2026-03-26T12:00:00.000Z'
+    StatusBinding:
+      type: object
+      properties:
+        listId:
+          type: string
+        listUri:
+          type: string
+        index:
+          type: integer
+        profile:
+          type: string
+          enum:
+          - statuslist2021
+          - bitstring-status-list
+        purpose:
+          type: string
+          enum:
+          - revocation
+          - suspension
+        status:
+          type: string
+          enum:
+          - valid
+          - suspended
+          - revoked
+      example:
+        listId: status:internal-main
+        listUri: http://localhost:4000/status/internal-main
+        profile: statuslist2021
+        purpose: revocation
+        status: valid
+    CredentialIssueRequest:
+      type: object
+      properties:
+        tenantId:
+          type: string
+        format:
+          type: string
+          enum:
+          - vc-jwt
+          - vc-ldp
+          - sd-jwt-vc
+          - bbs-vc
+        schemaId:
+          type: string
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+            version:
+              type: string
+        templateId:
+          type: string
+        issuer:
+          type: string
+        issuerDid:
+          type: string
+        holderDid:
+          type: string
+        subject:
+          type: object
+          additionalProperties: true
+        claims:
+          type: object
+          additionalProperties: true
+        proofType:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusBinding'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+      - issuerDid
+      example:
+        tenantId: tenant:internal-demo
+        format: vc-jwt
+        issuerDid: did:key:z6MkinternalIssuer111
+        holderDid: did:key:z6MkinternalWallet111
+        schema:
+          id: schema:internal-employee-card
+        templateId: tpl:internal-employee-card
+        claims:
+          givenName: Sagar
+          role: Engineer
+          employeeId: EMP-001
+        proofType: JwtProof2020
+        status:
+          listId: status:internal-main
+          profile: statuslist2021
+          purpose: revocation
+          status: valid
+        metadata:
+          source: flow-testing
+          scenario: direct-issuance
+    CredentialIssueResult:
+      type: object
+      properties:
+        format:
+          type: string
+        credential:
+          description: Credential payload, compact token, or structured VC object
+        deferred:
+          type: object
+          properties:
+            transactionId:
+              type: string
+            expiresAt:
+              type: string
+              format: date-time
+        record:
+          type: object
+          properties:
+            id:
+              type: string
+            tenantId:
+              type: string
+            issuerDid:
+              type: string
+            subjectId:
+              type: string
+            proofType:
+              type: string
+            hash:
+              type: string
+            format:
+              type: string
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+            template:
+              type: object
+              properties:
+                id:
+                  type: string
+            status:
+              $ref: '#/components/schemas/StatusBinding'
+            metadata:
+              $ref: '#/components/schemas/Metadata'
+      example:
+        format: vc-jwt
+        credential: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.payload.signature
+        record:
+          id: cred:1711470001000
+          tenantId: tenant:internal-demo
+          issuerDid: did:key:z6MkinternalIssuer111
+          subjectId: null
+          proofType: JwtProof2020
+          hash: 2a7c6dcdacff3180df4ab7c0c860d5cb
+          format: vc-jwt
+          schema:
+            id: schema:internal-employee-card
+          template:
+            id: tpl:internal-employee-card
+          status:
+            listId: status:internal-main
+            profile: statuslist2021
+            purpose: revocation
+            status: valid
+          metadata:
+            source: flow-testing
+            scenario: direct-issuance
+    CredentialVerifyRequest:
+      type: object
+      properties:
+        credential: {}
+        vc: {}
+        format:
+          type: string
+          enum:
+          - vc-jwt
+          - vc-ldp
+          - sd-jwt-vc
+          - bbs-vc
+        challenge:
+          type: string
+        domain:
+          type: string
+        expectedIssuerDid:
+          type: string
+        resolveStatus:
+          type: boolean
+      example:
+        credential: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.payload.signature
+        format: vc-jwt
+        expectedIssuerDid: did:key:z6MkinternalIssuer111
+        resolveStatus: true
+    CredentialVerifyResult:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        format:
+          type: string
+        checks:
+          type: object
+          additionalProperties:
+            type: boolean
+        errors:
+          type: array
+          items:
+            type: string
+        record:
+          type: object
+          additionalProperties: true
+      example:
+        valid: true
+        format: vc-jwt
+        checks:
+          signature: true
+          structure: true
+          issuer: true
+          schema: true
+          status: true
+          trust: true
+        errors: []
+        record:
+          id: cred:1711470001000
+          tenantId: tenant:internal-demo
+          issuerDid: did:key:z6MkinternalIssuer111
+          proofType: JwtProof2020
+          format: vc-jwt
+          hash: 2a7c6dcdacff3180df4ab7c0c860d5cb
+    PresentationCreateRequest:
+      type: object
+      properties:
+        tenantId:
+          type: string
+        verifierDid:
+          type: string
+        holder:
+          type: string
+        holderDid:
+          type: string
+        credentialIds:
+          type: array
+          items:
+            type: string
+        challenge:
+          type: string
+        domain:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        tenantId: tenant:internal-demo
+        verifierDid: did:key:z6MkinternalVerifier111
+        holderDid: did:key:z6MkinternalWallet111
+        credentialIds:
+        - cred:1711470001000
+        challenge: challenge-internal-001
+        domain: internal.example
+        metadata:
+          source: flow-testing
+    PresentationRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        tenantId:
+          type: string
+        holderDid:
+          type: string
+        verifierDid:
+          type: string
+        format:
+          type: string
+        presentation: {}
+        credentialIds:
+          type: array
+          items:
+            type: string
+        challenge:
+          type: string
+        domain:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        hash:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: vp:1711470002000
+        tenantId: tenant:internal-demo
+        holderDid: did:key:z6MkinternalWallet111
+        verifierDid: did:key:z6MkinternalVerifier111
+        format: mixed
+        presentation:
+          '@context':
+          - https://www.w3.org/2018/credentials/v1
+          type:
+          - VerifiablePresentation
+          holder: did:key:z6MkinternalWallet111
+          verifiableCredential:
+          - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.payload.signature
+          challenge: challenge-internal-001
+          domain: internal.example
+        credentialIds:
+        - cred:1711470001000
+        challenge: challenge-internal-001
+        domain: internal.example
+        metadata:
+          source: flow-testing
+        hash: b7a8da7bc3795fa1e1fc9d5ae3294f62
+        createdAt: '2026-03-26T12:10:00.000Z'
+        updatedAt: '2026-03-26T12:10:00.000Z'
+    PresentationVerifyRequest:
+      type: object
+      properties:
+        presentation: {}
+        vp: {}
+        format:
+          type: string
+          enum:
+          - vc-jwt
+          - vc-ldp
+          - sd-jwt-vc
+          - bbs-vc
+          - mixed
+        challenge:
+          type: string
+        domain:
+          type: string
+        resolveStatus:
+          type: boolean
+        verifyTrustChain:
+          type: boolean
+      example:
+        presentation:
+          id: vp:1711470002000
+        format: mixed
+        challenge: challenge-internal-001
+        domain: internal.example
+        resolveStatus: true
+        verifyTrustChain: true
+    PresentationVerifyResult:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        format:
+          type: string
+        checks:
+          type: object
+          additionalProperties:
+            type: boolean
+        errors:
+          type: array
+          items:
+            type: string
+        record:
+          $ref: '#/components/schemas/PresentationRecord'
+      example:
+        valid: true
+        format: mixed
+        checks:
+          holderBinding: true
+          challenge: true
+          domain: true
+          credentials: true
+          status: true
+          trust: true
+          disclosure: true
+        errors: []
+        record:
+          id: vp:1711470002000
+          tenantId: tenant:internal-demo
+          holderDid: did:key:z6MkinternalWallet111
+          verifierDid: did:key:z6MkinternalVerifier111
+          format: mixed
+    TenantCreateRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        issuerDid:
+          type: string
+        tier:
+          type: string
+        enabled:
+          type: boolean
+        policies:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+      - name
+      example:
+        id: tenant:internal-demo
+        name: Internal Demo Tenant
+        tier: standard
+        enabled: true
+        metadata:
+          source: flow-testing
+    TenantRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        issuerDid:
+          type: string
+        tier:
+          type: string
+        enabled:
+          type: boolean
+        policies:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        id: tenant:internal-demo
+        name: Internal Demo Tenant
+        tier: standard
+        enabled: true
+        policies: []
+        metadata:
+          source: flow-testing
+    TenantPolicyRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+        rules:
+          type: object
+          additionalProperties: true
+      required:
+      - policyId
+      - name
+      - rules
+      example:
+        policyId: policy:tenant-demo-issuance
+        name: Tenant Issuance Policy
+        version: 1.0.0
+        description: Demo policy controlling issuance settings
+        rules:
+          allowFormats:
+          - vc-jwt
+          - sd-jwt-vc
+          requireTrustedIssuer: true
+    TrustRegistryRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        tenantId:
+          type: string
+        registryId:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        did:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        trustFrameworkId:
+          type: string
+        accreditationLevel:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        metadataUri:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+      - registryId
+      - entityType
+      - entityId
+      example:
+        id: trust:internal-issuer
+        tenantId: tenant:internal-demo
+        registryId: registry:internal-main
+        entityType: issuer
+        entityId: issuer:internal
+        did: did:key:z6MkinternalIssuer111
+        name: Internal Issuer Trust Entry
+        status: pending
+        trustFrameworkId: tf:internal
+        accreditationLevel: level-1
+        scopes:
+        - issue
+        - revoke
+        metadataUri: https://example.org/trust/internal-issuer.json
+        metadata:
+          source: flow-testing
+    TrustRegistryRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        tenantId:
+          type: string
+        registryId:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        did:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        trustFrameworkId:
+          type: string
+        accreditationLevel:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        metadataUri:
+          type: string
+        hash:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: trust:internal-issuer
+        tenantId: tenant:internal-demo
+        registryId: registry:internal-main
+        entityType: issuer
+        entityId: issuer:internal
+        did: did:key:z6MkinternalIssuer111
+        name: Internal Issuer Trust Entry
+        status: pending
+        trustFrameworkId: tf:internal
+        accreditationLevel: level-1
+        scopes:
+        - issue
+        - revoke
+        metadataUri: https://example.org/trust/internal-issuer.json
+        hash: 3782e25779f3525245a309f4ef338a11
+        metadata:
+          source: flow-testing
+        createdAt: '2026-03-26T12:00:00.000Z'
+        updatedAt: '2026-03-26T12:00:00.000Z'
+    GovernanceProposalRequest:
+      type: object
+      properties:
+        proposalId:
+          type: string
+        tenantId:
+          type: string
+        issuerDid:
+          type: string
+        governanceType:
+          type: string
+          enum:
+          - admin
+          - multisig
+          - dao
+          - policy
+        subjectType:
+          type: string
+        subjectId:
+          type: string
+        requiredApprovals:
+          type: integer
+        approvals:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        policyRef:
+          type: string
+        chainAnchors:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+      - subjectType
+      - subjectId
+      example:
+        proposalId: gov:internal-issuer-approval
+        tenantId: tenant:internal-demo
+        issuerDid: did:key:z6MkinternalIssuer111
+        governanceType: admin
+        subjectType: issuer
+        subjectId: issuer:internal
+        requiredApprovals: 1
+        metadata:
+          source: flow-testing
+    GovernanceApprovalRequest:
+      type: object
+      properties:
+        approverDid:
+          type: string
+        signature:
+          type: string
+      required:
+      - approverDid
+      example:
+        approverDid: did:key:z6MkinternalGovernor111
+        signature: sig:governance-approval-example
+    GovernanceProposal:
+      type: object
+      properties:
+        proposalId:
+          type: string
+        tenantId:
+          type: string
+        issuerDid:
+          type: string
+        governanceType:
+          type: string
+        status:
+          type: string
+        subjectType:
+          type: string
+        subjectId:
+          type: string
+        requiredApprovals:
+          type: integer
+        approvals:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        policyRef:
+          type: string
+        chainAnchors:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        proposalId: gov:internal-issuer-approval
+        tenantId: tenant:internal-demo
+        issuerDid: did:key:z6MkinternalIssuer111
+        governanceType: admin
+        status: approved
+        subjectType: issuer
+        subjectId: issuer:internal
+        requiredApprovals: 1
+        approvals:
+        - approverDid: did:key:z6MkinternalGovernor111
+          approvedAt: '2026-03-26T12:05:00.000Z'
+          signature: sig:governance-approval-example
+        metadata:
+          source: flow-testing
+        createdAt: '2026-03-26T12:04:00.000Z'
+        updatedAt: '2026-03-26T12:05:00.000Z'
+    ProtocolMetadata:
+      type: object
+      properties:
+        protocol:
+          type: string
+        issuerId:
+          type: string
+        verifierId:
+          type: string
+        walletId:
+          type: string
+        supportedCredentialFormats:
+          type: array
+          items:
+            type: string
+        supportedDidMethods:
+          type: array
+          items:
+            type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        endpoints:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              url:
+                type: string
+              methods:
+                type: array
+                items:
+                  type: string
+              authenticated:
+                type: boolean
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        protocol: oidc4vci
+        supportedCredentialFormats:
+        - vc-jwt
+        - vc-ldp
+        - sd-jwt-vc
+        - bbs-vc
+        supportedDidMethods:
+        - did:internal
+        - did:key
+        - did:jwk
+        - did:web
+        endpoints:
+        - type: metadata
+          url: http://localhost:4000/v1/internal/protocols/oidc4vci/metadata
+          methods:
+          - GET
+        - type: authorization
+          url: http://localhost:4000/v1/internal/protocols/oidc4vci/authorize
+          methods:
+          - POST
+        - type: token
+          url: http://localhost:4000/v1/internal/protocols/oidc4vci/token
+          methods:
+          - POST
+        - type: credential
+          url: http://localhost:4000/v1/internal/protocols/oidc4vci/credentials
+          methods:
+          - POST
+        metadata:
+          driver: internal
+          processingMode: worker-backed
+    ProtocolSessionRequest:
+      type: object
+      additionalProperties: true
+      properties:
+        tenantId:
+          type: string
+        issuerDid:
+          type: string
+        verifierDid:
+          type: string
+        holderDid:
+          type: string
+        walletId:
+          type: string
+        challenge:
+          type: string
+        nonce:
+          type: string
+        callbackUrl:
+          type: string
+        enqueue:
+          type: boolean
+          default: true
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        tenantId: tenant:internal-demo
+        issuerDid: did:key:z6MkinternalIssuer111
+        holderDid: did:key:z6MkinternalWallet111
+        schemaId: schema:internal-employee-card
+        format: vc-jwt
+        claims:
+          givenName: Sagar
+          role: Engineer
+          employeeId: EMP-OIDC4VCI
+        enqueue: true
+        metadata:
+          source: flow-testing
+    ProtocolSession:
+      type: object
+      properties:
+        id:
+          type: string
+        protocol:
+          type: string
+        tenantId:
+          type: string
+        issuerDid:
+          type: string
+        verifierDid:
+          type: string
+        holderDid:
+          type: string
+        walletId:
+          type: string
+        state:
+          type: string
+        challenge:
+          type: string
+        nonce:
+          type: string
+        authorizationCode:
+          type: string
+        preAuthorizedCode:
+          type: string
+        deepLink:
+          type: string
+        qrPayload:
+          type: string
+        callbackUrl:
+          type: string
+        requestObject: {}
+        responseObject: {}
+        expiresAt:
+          type: string
+          format: date-time
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        id: session:1711470003000
+        protocol: oidc4vci
+        tenantId: tenant:internal-demo
+        issuerDid: did:key:z6MkinternalIssuer111
+        holderDid: did:key:z6MkinternalWallet111
+        state: created
+        challenge: challenge-oidc4vci-001
+        nonce: nonce-oidc4vci-001
+        authorizationCode: auth:1711470003000
+        preAuthorizedCode: preauth:1711470003000
+        deepLink: http://localhost:4000/wallet?protocol=oidc4vci&session=session:1711470003000
+        qrPayload: '{"protocol":"oidc4vci","sessionId":"session:1711470003000"}'
+        callbackUrl: http://localhost:4000/callback
+        requestObject:
+          schemaId: schema:internal-employee-card
+          format: vc-jwt
+        expiresAt: '2026-03-26T12:20:00.000Z'
+        metadata:
+          driver: internal
+          processingMode: worker-backed
+          workerJobId: job:1711470003000
+    DeferredExchange:
+      type: object
+      properties:
+        transactionId:
+          type: string
+        protocol:
+          type: string
+        sessionId:
+          type: string
+        credentialFormat:
+          type: string
+        state:
+          type: string
+        subjectId:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      example:
+        transactionId: auth:1711470003000
+        protocol: oidc4vci
+        sessionId: session:1711470003000
+        credentialFormat: vc-jwt
+        state: ready
+        subjectId: did:key:z6MkinternalWallet111
+        expiresAt: '2026-03-26T12:20:00.000Z'
+        metadata:
+          driver: internal
+    AuditEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        tenantId:
+          type: string
+        actorDid:
+          type: string
+        driver:
+          type: string
+        protocol:
+          type: string
+        eventType:
+          type: string
+        severity:
+          type: string
+        subjectType:
+          type: string
+        subjectId:
+          type: string
+        action:
+          type: string
+        status:
+          type: string
+        correlationId:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        details:
+          $ref: '#/components/schemas/Metadata'
+        hash:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: audit:1711470004000
+        tenantId: tenant:internal-demo
+        actorDid: did:key:z6MkinternalIssuer111
+        driver: internal
+        protocol: oidc4vci
+        eventType: credential.issued
+        severity: info
+        subjectType: credential
+        subjectId: cred:1711470001000
+        action: credential.issued
+        status: success
+        correlationId: corr:demo-001
+        occurredAt: '2026-03-26T12:06:00.000Z'
+        details:
+          format: vc-jwt
+          source: flow-testing
+        hash: 59b3df4c2771ca8b56f762b7a2a0ea69
+        createdAt: '2026-03-26T12:06:00.000Z'
+        updatedAt: '2026-03-26T12:06:00.000Z'
+    RevocationListCreateRequest:
+      type: object
+      properties:
+        issuerDid:
+          type: string
+        tenantId:
+          type: string
+        statusListUri:
+          type: string
+      required:
+      - issuerDid
+      example:
+        issuerDid: did:key:z6MkinternalIssuer111
+        tenantId: tenant:internal-demo
+        statusListUri: http://localhost:4000/status/internal-main
+    RevokeCredentialRequest:
+      type: object
+      properties:
+        credentialId:
+          type: string
+      required:
+      - credentialId
+      example:
+        credentialId: cred:1711470001000
+    RevocationList:
+      type: object
+      properties:
+        id:
+          type: string
+        issuerDid:
+          type: string
+        tenantId:
+          type: string
+        statusListUri:
+          type: string
+        statusListId:
+          type: string
+        entries:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: revocation:1711470005000
+        issuerDid: did:key:z6MkinternalIssuer111
+        tenantId: tenant:internal-demo
+        statusListUri: http://localhost:4000/status/internal-main
+        statusListId: status:internal-main
+        entries:
+        - credentialId: cred:1711470001000
+          status: revoked
+          updatedAt: '2026-03-26T12:15:00.000Z'
+        createdAt: '2026-03-26T12:00:00.000Z'
+        updatedAt: '2026-03-26T12:15:00.000Z'
+    PaginatedRevocationLists:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RevocationList'
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer

@@ -1,0 +1,30 @@
+export const colors = {
+  background: "#F5FBFF",
+  backgroundSoft: "#ECFFF9",
+  surface: "#FFFFFF",
+  surfaceAlt: "#F7FBFF",
+  border: "#D6E4F0",
+  ink: "#041B2D",
+  inkSoft: "#17456D",
+  text: "#0C2036",
+  textMuted: "#4B6B88",
+  brand50: "#F5FBFF",
+  brand100: "#ECFFF9",
+  brand200: "#D9FFF5",
+  brand300: "#7EF7D5",
+  brand400: "#5CF2C8",
+  brand500: "#46D8F0",
+  brand600: "#22C7D8",
+  brand700: "#0B6CFF",
+  brand800: "#17456D",
+  brand900: "#041B2D",
+  success: "#12805C",
+  warning: "#A86400",
+  danger: "#B42318",
+} as const;
+
+export const gradients = {
+  brand: ["#5CF2C8", "#22C7D8", "#0B6CFF"] as const,
+  calm: ["#F5FBFF", "#ECFFF9"] as const,
+  dark: ["#041B2D", "#0C2036"] as const,
+} as const;

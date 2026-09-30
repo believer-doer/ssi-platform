@@ -1,0 +1,15 @@
+{
+  "name": "@ssi/plugins",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@ssi/config": "workspace:*",
+    "@ssi/driver-internal": "workspace:*",
+    "@ssi/driver-bitcoin": "workspace:*",
+    "@ssi/driver-ethereum": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

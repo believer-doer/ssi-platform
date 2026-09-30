@@ -1,0 +1,61 @@
+<svg width="1600" height="480" viewBox="0 0 1600 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="veridityGlow" x1="48" y1="44" x2="318" y2="312" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5CF2C8"/>
+      <stop offset="0.52" stop-color="#22C7D8"/>
+      <stop offset="1" stop-color="#0B6CFF"/>
+    </linearGradient>
+    <linearGradient id="veridityWord" x1="420" y1="110" x2="1180" y2="352" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#041B2D"/>
+      <stop offset="1" stop-color="#17456D"/>
+    </linearGradient>
+    <filter id="softShadow" x="0" y="0" width="380" height="380" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="16"/>
+      <feGaussianBlur stdDeviation="18"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.024 0 0 0 0 0.106 0 0 0 0 0.176 0 0 0 0.18 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="480" rx="40" fill="#F5FBFF"/>
+
+  <g filter="url(#softShadow)">
+    <rect x="42" y="36" width="292" height="292" rx="76" fill="#041B2D"/>
+    <path d="M96 112C97.8 106.4 101.9 101.9 107.4 99.6C112.9 97.3 119.1 97.5 124.5 100.2L187.4 131.6C191.1 133.4 195.4 133.4 199.1 131.6L262 100.2C267.4 97.5 273.6 97.3 279.1 99.6C284.6 101.9 288.7 106.4 290.5 112C292.2 117.6 291.4 123.7 288.2 128.6L206.2 254.1C202.8 259.3 197 262.5 190.8 262.5C184.6 262.5 178.8 259.3 175.4 254.1L93.4 128.6C90.2 123.7 89.4 117.6 91.2 112H96Z" fill="url(#veridityGlow)"/>
+    <path d="M123 122L191 228L259 122L219 142C201.4 150.8 180.6 150.8 163 142L123 122Z" fill="#E8FFFB"/>
+    <path d="M190.5 149L159.2 199.6C156.1 204.6 149.9 206.1 145 203C140 199.9 138.5 193.7 141.6 188.8L180.7 125.5C182.6 122.5 185.8 120.6 189.4 120.5C193 120.3 196.4 121.9 198.5 124.8L242 183.7C245.5 188.5 244.5 195.1 239.7 198.7C235 202.2 228.3 201.2 224.8 196.5L190.5 149Z" fill="#041B2D"/>
+    <circle cx="256" cy="102" r="18" fill="#5CF2C8"/>
+    <path d="M247 101.8L253.7 108.5L266.5 95.7" stroke="#041B2D" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g stroke="url(#veridityWord)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M408 150L450 264L492 150"/>
+
+    <path d="M554 227C554 198 576 176 607 176C636 176 657 196 657 223C657 228 657 233 656 237H574C579 258 594 268 613 268C628 268 640 262 650 252"/>
+    <path d="M577 237H651"/>
+
+    <path d="M714 274V176"/>
+    <path d="M714 205C722 187 738 176 760 176"/>
+
+    <path d="M813 176V274"/>
+    <circle cx="813" cy="145" r="8" fill="url(#veridityWord)" stroke="none"/>
+
+    <path d="M938 137V274"/>
+    <path d="M938 190C925 181 911 176 894 176C864 176 842 198 842 225C842 252 864 274 894 274C911 274 925 269 938 260"/>
+
+    <path d="M995 176V274"/>
+    <circle cx="995" cy="145" r="8" fill="url(#veridityWord)" stroke="none"/>
+
+    <path d="M1066 139V176"/>
+    <path d="M1038 176H1094"/>
+    <path d="M1066 176V240C1066 260 1076 270 1094 270"/>
+
+    <path d="M1135 176L1183 274"/>
+    <path d="M1231 176L1160 323C1151 341 1140 348 1122 348"/>
+  </g>
+
+  <text x="421" y="396" fill="#4B6B88" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="28" font-weight="600" letter-spacing="0.18em">IDENTITY INFRASTRUCTURE WITH VERIFIED TRUST</text>
+</svg>

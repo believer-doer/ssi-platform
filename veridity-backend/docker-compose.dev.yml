@@ -1,0 +1,125 @@
+x-ssi-env: &ssi-env
+  NODE_ENV: ${NODE_ENV:-development}
+  HOST: ${HOST:-0.0.0.0}
+  PORT: ${PORT:-4000}
+  MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/ssi_platform}
+  REDIS_HOST: ${REDIS_HOST:-redis}
+  REDIS_PORT: ${REDIS_PORT:-6379}
+  JWT_SIGNING_KEY: ${JWT_SIGNING_KEY:-dev-jwt-secret}
+  SD_JWT_KEY: ${SD_JWT_KEY:-dev-sd-jwt-secret}
+  BBS_PRIVATE_KEY: ${BBS_PRIVATE_KEY:-dev-bbs-private-key}
+  KEY_SECRET: ${KEY_SECRET:-dev-key-secret}
+  CONTROL_PLANE_JWT_SECRET: ${CONTROL_PLANE_JWT_SECRET:-dev-control-plane-secret}
+  CONTROL_PLANE_AUTH_REQUIRED: ${CONTROL_PLANE_AUTH_REQUIRED:-false}
+  CONTROL_PLANE_TENANT_REQUIRED: ${CONTROL_PLANE_TENANT_REQUIRED:-false}
+  ENABLE_DIDCOMM: ${ENABLE_DIDCOMM:-false}
+  ENABLE_ETHEREUM: ${ENABLE_ETHEREUM:-false}
+  ETH_NODE_URL: ${ETH_NODE_URL:-http://ethereum-node:8545}
+  ETH_PRIVATE_KEY: ${ETH_PRIVATE_KEY:-}
+  ETH_CHAIN_ID: ${ETH_CHAIN_ID:-31337}
+  ETH_REGISTRY_ADDRESS: ${ETH_REGISTRY_ADDRESS:-}
+  ETH_REGISTRY_DEPLOY_BLOCK: ${ETH_REGISTRY_DEPLOY_BLOCK:-0}
+  ENABLE_BITCOIN: ${ENABLE_BITCOIN:-false}
+  BTC_NODE_URL: ${BTC_NODE_URL:-http://user:password@bitcoin-node:18443}
+  BTC_WALLET_NAME: ${BTC_WALLET_NAME:-ssi_platform_wallet}
+  BTC_NETWORK: ${BTC_NETWORK:-regtest}
+  OIDC_ISSUER_URL: ${OIDC_ISSUER_URL:-http://localhost:4000}
+  OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-ssi-platform-client}
+  OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-ssi-platform-secret}
+  OIDC_REDIRECT_URI: ${OIDC_REDIRECT_URI:-http://localhost:4000/callback}
+  OIDC_VP_CLIENT_ID: ${OIDC_VP_CLIENT_ID:-ssi-platform-vp-client}
+  OIDC_VP_REDIRECT_URI: ${OIDC_VP_REDIRECT_URI:-http://localhost:4000/vp/callback}
+
+services:
+  api:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -lc "corepack enable && corepack prepare pnpm@10.32.1 --activate && pnpm install --frozen-lockfile && pnpm --filter @ssi/api-server dev"
+    volumes:
+      - .:/app
+      - api-node-modules:/app/node_modules
+    ports:
+      - "4000:4000"
+    environment:
+      <<: *ssi-env
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -lc "corepack enable && corepack prepare pnpm@10.32.1 --activate && pnpm install --frozen-lockfile && pnpm --filter @ssi/worker dev"
+    volumes:
+      - .:/app
+      - worker-node-modules:/app/node_modules
+    environment:
+      <<: *ssi-env
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  mongo:
+    image: mongo:6
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  ethereum-node:
+    profiles: ["ethereum"]
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -lc "corepack enable && corepack prepare pnpm@10.32.1 --activate && pnpm install --frozen-lockfile && pnpm eth:node"
+    volumes:
+      - .:/app
+      - runtime-node-modules:/app/node_modules
+    ports:
+      - "8545:8545"
+
+  bitcoin-node:
+    profiles: ["bitcoin"]
+    image: ruimarinho/bitcoin-core:26
+    command:
+      - -regtest
+      - -server
+      - -rpcbind=0.0.0.0
+      - -rpcallowip=0.0.0.0/0
+      - -rpcuser=user
+      - -rpcpassword=password
+      - -fallbackfee=0.0002
+      - -txindex=1
+    ports:
+      - "18443:18443"
+    volumes:
+      - bitcoin-data:/home/bitcoin/.bitcoin
+    healthcheck:
+      test: ["CMD-SHELL", "bitcoin-cli -regtest -rpcuser=user -rpcpassword=password getblockchaininfo >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mongo-data:
+  bitcoin-data:
+  api-node-modules:
+  runtime-node-modules:
+  worker-node-modules:

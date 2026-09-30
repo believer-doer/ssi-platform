@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="markGradientDark" x1="69" y1="53" x2="450" y2="428" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7EF7D5"/>
+      <stop offset="0.52" stop-color="#46D8F0"/>
+      <stop offset="1" stop-color="#5A8CFF"/>
+    </linearGradient>
+    <filter id="markShadowDark" x="18" y="18" width="476" height="476" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="22"/>
+      <feGaussianBlur stdDeviation="20"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.008 0 0 0 0 0.035 0 0 0 0 0.071 0 0 0 0.55 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="110" fill="#06111F"/>
+  <g filter="url(#markShadowDark)">
+    <rect x="58" y="42" width="396" height="396" rx="102" fill="#0C2036"/>
+    <path d="M130.8 143.1C133.3 135.5 139 129.3 146.5 126.2C154 123.1 162.4 123.3 169.7 127L254.9 169.7C259.9 172.2 265.8 172.2 270.8 169.7L356 127C363.3 123.3 371.7 123.1 379.2 126.2C386.7 129.3 392.4 135.5 394.9 143.1C397.4 150.7 396.3 159 391.9 165.7L280.8 335.8C276.2 342.8 268.3 347.2 259.9 347.2C251.5 347.2 243.6 342.8 239 335.8L127.9 165.7C123.5 159 122.4 150.7 124.9 143.1H130.8Z" fill="url(#markGradientDark)"/>
+    <path d="M166.8 157.1L259 297.5L351.2 157.1L297 184.4C273 196.4 245 196.4 221 184.4L166.8 157.1Z" fill="#ECFFF9"/>
+    <path d="M258.6 195L216.2 263.5C212 270.1 203.8 272.1 197.1 267.9C190.5 263.7 188.5 255.4 192.7 248.8L245.5 163.3C248.1 159.2 252.4 156.6 257.2 156.3C262 156.1 266.6 158.3 269.5 162.2L328.2 241.7C333 248.2 331.7 257.2 325.3 262C318.8 266.8 309.8 265.5 305 259L258.6 195Z" fill="#06203A"/>
+    <circle cx="347" cy="129" r="24" fill="#7EF7D5"/>
+    <path d="M335 128.8L343.9 137.7L360.9 120.7" stroke="#06203A" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -1,0 +1,14 @@
+{
+  "name": "@ssi/driver-ethereum",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@ssi/driver-internal": "workspace:*",
+    "ethers": "^6.8.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

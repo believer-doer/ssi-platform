@@ -1,0 +1,10 @@
+{
+  "name": "@ssi/utils",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "uuid": "^13.0.0"
+  }
+}
