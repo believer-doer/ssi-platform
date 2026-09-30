@@ -64,7 +64,7 @@ const rateLimitBuckets = new Map<string, RateLimitBucket>();
 
 const activeProtocolKeyPair = generateKeyPairSync("rsa", { modulusLength: 2048 });
 const activeProtocolKid = process.env.PROTOCOL_JWKS_ACTIVE_KID || "phase4-rs256-active";
-const activePublicJwk = activeProtocolKeyPair.publicKey.export({ format: "jwk" }) as PublicJwk;
+const activePublicJwk = activeProtocolKeyPair.publicKey.export({ format: "jwk" }) as unknown as PublicJwk;
 const additionalPublicJwks: PublicJwk[] = (() => {
   const parsed: PublicJwk[] = [];
   const configured = process.env.PROTOCOL_JWKS_ADDITIONAL_PUBLIC_KEYS_JSON;
@@ -85,7 +85,7 @@ const additionalPublicJwks: PublicJwk[] = (() => {
   if (String(process.env.PROTOCOL_JWKS_ROTATION_ENABLED || "false").toLowerCase() === "true") {
     const nextKeyPair = generateKeyPairSync("rsa", { modulusLength: 2048 });
     parsed.push({
-      ...(nextKeyPair.publicKey.export({ format: "jwk" }) as PublicJwk),
+      ...((nextKeyPair.publicKey.export({ format: "jwk" }) as unknown) as PublicJwk),
       use: "sig",
       alg: "RS256",
       kid: process.env.PROTOCOL_JWKS_NEXT_KID || "phase4-rs256-next",
@@ -779,7 +779,7 @@ export default async function protocolModule(fastify: FastifyInstance) {
     }
     const proofValidation = validateProofOfPossession(session, body);
     if (!proofValidation.ok) {
-      return oauthError(reply, 400, proofValidation.error, proofValidation.description);
+      return oauthError(reply, 400, proofValidation.error || "invalid_or_missing_proof", proofValidation.description || "Invalid proof");
     }
     const schema =
       (typeof session.requestObject?.schema === "object" && session.requestObject?.schema)
@@ -794,6 +794,8 @@ export default async function protocolModule(fastify: FastifyInstance) {
         : {}),
     };
 
+    const proofObj = (body.proof && typeof body.proof === "object") ? (body.proof as Record<string, unknown>) : undefined;
+
     try {
       const issued = await driver.credential.issue({
         tenantId: session.tenantId,
@@ -805,7 +807,7 @@ export default async function protocolModule(fastify: FastifyInstance) {
         schema: { id: String(schema.id || body.schemaId || "") },
         templateId: session.requestObject?.templateId as string | undefined,
         claims,
-        proofType: String(body.proof?.proof_type || body.proof_type || session.requestObject?.proofType || "jwt") || undefined,
+        proofType: String(proofObj?.proof_type || body.proof_type || session.requestObject?.proofType || "jwt") || undefined,
         defer: Boolean(body.defer ?? session.requestObject?.defer ?? false),
         metadata: {
           oidc4vci: true,

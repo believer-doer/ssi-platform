@@ -1,3 +1,28 @@
-.pnpm-store
-.vscode
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env.local
+
+# Build & Output
+.next/
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+artifacts/
+cache/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
 .codex
+.pnpm-store
+*.log
+npm-debug.log*
